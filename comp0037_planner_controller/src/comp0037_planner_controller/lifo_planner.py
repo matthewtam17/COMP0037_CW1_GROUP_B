@@ -12,6 +12,10 @@ class LIFOPlanner(CellBasedForwardSearch):
 
     # Simply put on the end of the queue
     def pushCellOntoQueue(self, cell):
+        #Checks if the new cell length is more than the existing max cell length.
+        #If it is then update the max queue length value.
+        if len(self.lifoQueue) > self.max_queue_length:
+            self.max_queue_length = self.lifoQueue
         self.lifoQueue.append(cell)
 
     # Check the queue size is zero
