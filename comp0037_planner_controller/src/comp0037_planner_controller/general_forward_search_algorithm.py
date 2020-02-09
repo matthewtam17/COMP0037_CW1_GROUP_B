@@ -21,11 +21,8 @@ class GeneralForwardSearchAlgorithm(PlannerBase):
         # Flag to store if the last plan was successful
         self.goalReached = None
 
-        #Task 1: path planning algorithm information tracker.
         #All the information trackers are stored here as they are common to all general forward search algorithms.
-        self.cells_visited = 0
         self.max_queue_length = 0
-        self.total_travel_cost = 0
         #Not yet implemented
         self.total_angle = 0
     #When you go between each waypoint. Angle waypoint 2 - waypoint 1 and sum all that together.
@@ -59,7 +56,6 @@ class GeneralForwardSearchAlgorithm(PlannerBase):
 
     def markCellAsVisitedAndRecordParent(self, cell, parentCell):
         cell.label = CellLabel.ALIVE
-        self.cells_visited = self.cells_visited + 1
         cell.parent = parentCell
 
     # Mark that a cell is dead. A dead cell is one in which all of its
@@ -226,9 +222,6 @@ class GeneralForwardSearchAlgorithm(PlannerBase):
             self.plannerDrawer.update()
             self.plannerDrawer.drawPathGraphicsWithCustomColour(path, colour)
             self.plannerDrawer.waitForKeyPress()
-
-        #Update the total travel cost value in the information tracker
-        self.total_travel_cost = path.travelCost
         
         # Return the path
         return path

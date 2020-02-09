@@ -2,6 +2,7 @@
 
 from cell_based_forward_search import CellBasedForwardSearch
 from collections import PriorityQueue
+import math
 
 # This class implements the greedy planning
 # algorithm. It works by using a priority queue. Each element in the queue has a priority, and 
@@ -14,17 +15,14 @@ class GreedyPlanner(CellBasedForwardSearch):
         CellBasedForwardSearch.__init__(self, title, occupancyGrid)
         self.greedyQueue = PriorityQueue()
 
-    # Simply put on the end of the queue
+    # Find the cell's "priority value" and add onto the priority queue.
+    # We can simply add the cell onto the back of the queue because the get() function returns us the highest priority cell
     def pushCellOntoQueue(self, cell):
-        #Checks if the new cell length is more than the existing max cell length.
-        #If it is then update the max queue length value.
-        if len(self.greedyQueue) > self.max_queue_length:
-            self.max_queue_length = len(self.greedyQueue)
-        self.greedyQueue.append(cell)
+        self.greedyQueue.put(self.EuclideanDistance(cell),cell)
 
     #  Calculates the Euclidean distance to the goal
-    def EuclideanDistance():
-        return 
+    def EuclideanDistance(self,cell):
+        return sqrt((self.goal.coords[0]-cell.coords[0])^2 + (self.goal.coords[1]-cell.coords[1])^2)
 
     # Check the queue size is zero
     def isQueueEmpty(self):
