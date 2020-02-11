@@ -17,7 +17,7 @@ class GeneralForwardSearchAlgorithm(PlannerBase):
     
     def __init__(self, title, occupancyGrid):
         PlannerBase.__init__(self, title, occupancyGrid)
-         
+        
         # Flag to store if the last plan was successful
         self.goalReached = None
 
@@ -90,6 +90,14 @@ class GeneralForwardSearchAlgorithm(PlannerBase):
         L = sqrt(dX * dX + dY * dY)*cost# Multiplied by the terrain cost of the cell
         
         return L
+    
+    #function for calculating the angle between two adjacent cells
+    def computeLstageAngle(self,parentCell,cell):
+
+        if (parentCell is None):
+            return -1
+
+        return abs(atan2(abs(parentCell.coords[1]-cell.coords[1]),abs(parentCell.coords[0]-cell.coords[0])))
         
     # The main search routine. The routine searches for a path between a given
     # set of coordinates. These are then converted into start and destination
@@ -197,14 +205,24 @@ class GeneralForwardSearchAlgorithm(PlannerBase):
         # Start at the goal and find the parent. Find the cost associated with the parent
         cell = pathEndCell.parent
         path.travelCost = self.computeLStageAdditiveCost(pathEndCell.parent, pathEndCell)
-        
+        path.travelAngle = self.computeLstageAngle(pathEndCell.parent,pathEndCell)
+        lastAngle = path.travelAngle
+        currentAngle = 0
+
         # Iterate back through and extract each parent in turn and add
         # it to the path. To work out the travel length along the
         # path, you'll also have to add self at self stage.
         while (cell is not None):
             path.waypoints.appendleft(cell)
             path.travelCost = path.travelCost + self.computeLStageAdditiveCost(cell.parent, cell)
+            currentAngle = self.computeLstageAngle(cell.parent,cell)
+            if (currentAngle == -1): 
+                currentAngle = lastAngle
+            print path.travelAngle
+            path.travelAngle = path.travelAngle +  abs(currentAngle - lastAngle)
+            lastAngle = currentAngle
             cell = cell.parent
+
             
         # Update the stats on the size of the path
         path.numberOfWaypoints = len(path.waypoints)
@@ -216,6 +234,7 @@ class GeneralForwardSearchAlgorithm(PlannerBase):
 
         print "Path travel cost = " + str(path.travelCost)
         print "Path cardinality = " + str(path.numberOfWaypoints)
+        print "Path travel angle = " + str(path.travelAngle)
         
         # Draw the path if requested
         if (self.showGraphics == True):

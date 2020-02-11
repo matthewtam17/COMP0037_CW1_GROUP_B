@@ -3,27 +3,27 @@ from cell_based_forward_search import CellBasedForwardSearch
 from collections import PriorityQueue
 import math
 
-# This class implements the Dijikstra Planning
+# This class implements the A* Planning
 # algorithm. It works by using a priority queue based on the cost-to-go for each cell.
 # the element with the highest priority is always popped first.
 
-class DijikstraPlanner(CellBasedForwardSearch):
+class AStarPlanner(CellBasedForwardSearch):
 
     # Construct the new planner object
     def __init__(self, title, occupancyGrid):
         CellBasedForwardSearch.__init__(self, title, occupancyGrid)
-        self.dijikstraQueue = PriorityQueue()
+        self.astarQueue = PriorityQueue()
 
     # Find the cell's "priority value" and add onto the priority queue.
     # We can simply add the cell onto the back of the queue because the get() function returns us the highest priority cell
     def pushCellOntoQueue(self, cell):
         itercell = cell.parent
-        travelCost = self.computeLStageAdditiveCost(itercell,cell)
+        travelCost = self.computeLStageAdditiveCost(itercell,cell)  + self.EuclideanDistance(itercell)
         while (itercell is not None):
             travelCost = travelCost + self.computeLStageAdditiveCost(itercell.parent, itercell)
             itercell = itercell.parent
         cell.travelCost = travelCost
-        self.greedyQueue.put(travelCost,cell)
+        self.astarQueue.put(travelCost,cell)
 
     #  Calculates the Euclidean distance to the goal
     def EuclideanDistance(self,cell):
@@ -31,11 +31,11 @@ class DijikstraPlanner(CellBasedForwardSearch):
 
     # Check the queue size is zero
     def isQueueEmpty(self):
-        return not self.greedyQueue
+        return not self.astarQueue
 
     # Simply pull from the front of the list
     def popCellFromQueue(self):
-        cell = self.greedyQueue.popleft()
+        cell = self.astarQueue.popleft()
         return cell
 
     def resolveDuplicate(self, cell, parentCell):

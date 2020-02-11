@@ -23,7 +23,7 @@ class DijikstraPlanner(CellBasedForwardSearch):
             travelCost = travelCost + self.computeLStageAdditiveCost(itercell.parent, itercell)
             itercell = itercell.parent
         cell.travelCost = travelCost
-        self.greedyQueue.put(travelCost,cell)
+        self.dijkstraQueue.put(travelCost,cell)
 
     #  Calculates the Euclidean distance to the goal
     def EuclideanDistance(self,cell):
@@ -31,11 +31,11 @@ class DijikstraPlanner(CellBasedForwardSearch):
 
     # Check the queue size is zero
     def isQueueEmpty(self):
-        return not self.greedyQueue
+        return not self.dijkstraQueue
 
     # Simply pull from the front of the list
     def popCellFromQueue(self):
-        cell = self.greedyQueue.popleft()
+        cell = self.dijkstraQueue.popleft()
         return cell
 
     def resolveDuplicate(self, cell, parentCell):

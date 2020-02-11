@@ -16,6 +16,9 @@ class PlannedPath(object):
         self.waypoints = deque()
 
         # Performance information - number of waypoints, and the
-        # travel cost of the path.
+        # travel cost of the path, also the angle that the robot should 
+        # turn through on the planned path
         self.numberOfWaypoints = 0
         self.travelCost = 0
+        self.travelAngle = 0
+
