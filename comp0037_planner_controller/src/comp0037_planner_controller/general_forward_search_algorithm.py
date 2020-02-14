@@ -103,12 +103,10 @@ class GeneralForwardSearchAlgorithm(PlannerBase):
     # set of coordinates. These are then converted into start and destination
     # cells in the search grid and the search algorithm is then run.
     def search(self, startCoords, goalCoords):
-
         # Make sure the queue is empty. We do this so that we can keep calling
         # the same method multiple times and have it work.
         while (self.isQueueEmpty() == False):
             self.popCellFromQueue()
-        
         # Create or update the search grid from the occupancy grid and seed
         # unvisited and occupied cells.
         if (self.searchGrid is None):

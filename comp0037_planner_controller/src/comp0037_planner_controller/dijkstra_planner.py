@@ -23,19 +23,19 @@ class DijkstraPlanner(CellBasedForwardSearch):
             travelCost = travelCost + self.computeLStageAdditiveCost(itercell.parent, itercell)
             itercell = itercell.parent
         cell.travelCost = travelCost
-        self.dijkstraQueue.put(travelCost,cell)
+        self.dijkstraQueue.put((travelCost,cell))
 
     #  Calculates the Euclidean distance to the goal
     def EuclideanDistance(self,cell):
-        return sqrt((self.goal.coords[0]-cell.coords[0])^2 + (self.goal.coords[1]-cell.coords[1])^2)
+        return math.sqrt((self.goal.coords[0]-cell.coords[0])**2 + (self.goal.coords[1]-cell.coords[1])**2)
 
     # Check the queue size is zero
     def isQueueEmpty(self):
-        return not self.dijkstraQueue
+        return self.dijkstraQueue.empty()
 
     # Simply pull from the front of the list
     def popCellFromQueue(self):
-        cell = self.dijkstraQueue.get()
+        priority, cell = self.dijkstraQueue.get()
         return cell
 
     def resolveDuplicate(self, cell, parentCell):

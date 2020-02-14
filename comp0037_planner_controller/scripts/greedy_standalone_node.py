@@ -29,6 +29,5 @@ planner.setWindowHeightInPixels(400)
 # Search and see if a path can be found. Returns True if a path from the start to the
 # goal was found and False otherwise
 goalReached = planner.search(start, goal)
-rospy.loginfo("potato")
 # Extract the path. This is based on the last search carried out.
 path = planner.extractPathToGoal()

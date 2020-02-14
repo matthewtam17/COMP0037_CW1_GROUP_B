@@ -18,19 +18,19 @@ class GreedyPlanner(CellBasedForwardSearch):
     # Find the cell's "priority value" and add onto the priority queue.
     # We can simply add the cell onto the back of the queue because the get() function returns us the highest priority cell
     def pushCellOntoQueue(self, cell):
-        self.greedyQueue.put(self.EuclideanDistance(cell),cell)
+        self.greedyQueue.put((self.EuclideanDistance(cell),cell))
 
     #  Calculates the Euclidean distance to the goal
     def EuclideanDistance(self,cell):
-        return sqrt((self.goal.coords[0]-cell.coords[0])^2 + (self.goal.coords[1]-cell.coords[1])^2)
+        return math.sqrt((self.goal.coords[0]-cell.coords[0])**2 + (self.goal.coords[1]-cell.coords[1])**2)
 
     # Check the queue size is zero
     def isQueueEmpty(self):
-        return not self.greedyQueue
+        return self.greedyQueue.empty()
 
     # Simply pull from the front of the list
     def popCellFromQueue(self):
-        cell = self.greedyQueue.get()
+        priority, cell = self.greedyQueue.get()
         return cell
 
     def resolveDuplicate(self, cell, parentCell):
