@@ -29,6 +29,15 @@ class AStarPlanner(CellBasedForwardSearch):
     def EuclideanDistance(self,cell):
         return math.sqrt((self.goal.coords[0]-cell.coords[0])**2 + (self.goal.coords[1]-cell.coords[1])**2)
 
+    def OctileDistance(self,cell):
+        return None
+
+    def constantDistance(self,cell):
+        return 5
+
+    def ManhattanDistance(self,cell):
+        return None
+
     # Check the queue size is zero
     def isQueueEmpty(self):
         return self.astarQueue.empty()

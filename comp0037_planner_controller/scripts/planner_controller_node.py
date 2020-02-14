@@ -111,10 +111,11 @@ class PlannerControllerNode(object):
         
         # Extract the path
         path = self.planner.extractPathToGoal()
-
+        startTime = rospy.Time.now()
         # Now drive it
         self.robotController.drivePathToGoal(path, goal.theta, self.planner.getPlannerDrawer())
-
+        elapsed_time = rospy.Time.now() - startTime
+        print("Elapsed time: "+elapsed_time)
         return True
     
     def run(self):
