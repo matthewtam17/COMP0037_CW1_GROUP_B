@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from cell_based_forward_search import CellBasedForwardSearch
-from collections import PriorityQueue
+import Queue
 import math
 
 # This class implements the A* Planning
@@ -12,7 +12,7 @@ class AStarPlanner(CellBasedForwardSearch):
     # Construct the new planner object
     def __init__(self, title, occupancyGrid):
         CellBasedForwardSearch.__init__(self, title, occupancyGrid)
-        self.astarQueue = PriorityQueue()
+        self.astarQueue = Queue.PriorityQueue()
 
     # Find the cell's "priority value" and add onto the priority queue.
     # We can simply add the cell onto the back of the queue because the get() function returns us the highest priority cell
@@ -35,7 +35,7 @@ class AStarPlanner(CellBasedForwardSearch):
 
     # Simply pull from the front of the list
     def popCellFromQueue(self):
-        cell = self.astarQueue.popleft()
+        cell = self.astarQueue.get()
         return cell
 
     def resolveDuplicate(self, cell, parentCell):

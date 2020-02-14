@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from cell_based_forward_search import CellBasedForwardSearch
-from collections import PriorityQueue
+import Queue
 import math
 
 # This class implements the greedy planning
@@ -13,7 +13,7 @@ class GreedyPlanner(CellBasedForwardSearch):
     # Construct the new planner object
     def __init__(self, title, occupancyGrid):
         CellBasedForwardSearch.__init__(self, title, occupancyGrid)
-        self.greedyQueue = PriorityQueue()
+        self.greedyQueue = Queue.PriorityQueue()
 
     # Find the cell's "priority value" and add onto the priority queue.
     # We can simply add the cell onto the back of the queue because the get() function returns us the highest priority cell
@@ -30,7 +30,7 @@ class GreedyPlanner(CellBasedForwardSearch):
 
     # Simply pull from the front of the list
     def popCellFromQueue(self):
-        cell = self.greedyQueue.popleft()
+        cell = self.greedyQueue.get()
         return cell
 
     def resolveDuplicate(self, cell, parentCell):

@@ -177,6 +177,8 @@ class GeneralForwardSearchAlgorithm(PlannerBase):
         self.drawCurrentState()
         
         print "numberOfCellsVisited = " + str(self.numberOfCellsVisited)
+
+        print "maximumQueueLength = " + str(self.max_queue_length)
         
         if self.goalReached:
             print "Goal reached"
@@ -218,7 +220,6 @@ class GeneralForwardSearchAlgorithm(PlannerBase):
             currentAngle = self.computeLstageAngle(cell.parent,cell)
             if (currentAngle == -1): 
                 currentAngle = lastAngle
-            print path.travelAngle
             path.travelAngle = path.travelAngle +  abs(currentAngle - lastAngle)
             lastAngle = currentAngle
             cell = cell.parent
