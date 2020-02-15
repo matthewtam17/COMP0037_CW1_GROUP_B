@@ -24,6 +24,10 @@ class DijkstraPlanner(CellBasedForwardSearch):
             itercell = itercell.parent
         cell.travelCost = travelCost
         self.dijkstraQueue.put((travelCost,cell))
+        #Checks if the new cell length is more than the existing max cell length.
+        #If it is then update the max queue length value.
+        if len(self.dijkstraQueue) > self.max_queue_length:
+            self.max_queue_length = len(self.dijkstraQueue)
 
     #  Calculates the Euclidean distance to the goal
     def EuclideanDistance(self,cell):

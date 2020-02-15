@@ -15,7 +15,7 @@ class LIFOPlanner(CellBasedForwardSearch):
         #Checks if the new cell length is more than the existing max cell length.
         #If it is then update the max queue length value.
         if len(self.lifoQueue) > self.max_queue_length:
-            self.max_queue_length = self.lifoQueue
+            self.max_queue_length = len(self.lifoQueue)
         self.lifoQueue.append(cell)
 
     # Check the queue size is zero

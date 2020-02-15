@@ -18,6 +18,10 @@ class GreedyPlanner(CellBasedForwardSearch):
     # Find the cell's "priority value" and add onto the priority queue.
     # We can simply add the cell onto the back of the queue because the get() function returns us the highest priority cell
     def pushCellOntoQueue(self, cell):
+        #Checks if the new cell length is more than the existing max cell length.
+        #If it is then update the max queue length value.
+        if len(self.greedyQueue) > self.max_queue_length:
+            self.max_queue_length = len(self.greedyQueue)
         self.greedyQueue.put((self.EuclideanDistance(cell),cell))
 
     #  Calculates the Euclidean distance to the goal
