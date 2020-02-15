@@ -20,8 +20,8 @@ class GreedyPlanner(CellBasedForwardSearch):
     def pushCellOntoQueue(self, cell):
         #Checks if the new cell length is more than the existing max cell length.
         #If it is then update the max queue length value.
-        if len(self.greedyQueue) > self.max_queue_length:
-            self.max_queue_length = len(self.greedyQueue)
+        if self.greedyQueue.qsize() > self.max_queue_length:
+            self.max_queue_length = self.greedyQueue.qsize()
         self.greedyQueue.put((self.EuclideanDistance(cell),cell))
 
     #  Calculates the Euclidean distance to the goal

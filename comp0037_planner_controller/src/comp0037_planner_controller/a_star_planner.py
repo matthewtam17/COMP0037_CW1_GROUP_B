@@ -26,9 +26,8 @@ class AStarPlanner(CellBasedForwardSearch):
         self.astarQueue.put((travelCost,cell))
         #Checks if the new cell length is more than the existing max cell length.
         #If it is then update the max queue length value.
-        if len(self.astarQueue) > self.max_queue_length:
-            self.max_queue_length = len(self.astarQueue)
-
+        if self.astarQueue.qsize() > self.max_queue_length:
+            self.max_queue_length = self.astarQueue.qsize()
     #  Calculates the Euclidean distance to the goal
     def EuclideanDistance(self,cell):
         return math.sqrt((self.goal.coords[0]-cell.coords[0])**2 + (self.goal.coords[1]-cell.coords[1])**2)
