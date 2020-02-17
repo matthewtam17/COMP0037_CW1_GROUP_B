@@ -32,14 +32,17 @@ class AStarPlanner(CellBasedForwardSearch):
     def EuclideanDistance(self,cell):
         return math.sqrt((self.goal.coords[0]-cell.coords[0])**2 + (self.goal.coords[1]-cell.coords[1])**2)
 
+    # Calculates the octile distance to the goal. Admissible if the robot moves in 8 directions.
     def OctileDistance(self,cell):
-        return None
+        return max(abs(cell.coords[0]-self.goal.coords[0]),abs(cell.coords[1]-self.goal.coords[1]))+(sqrt(2)-1)*min(abs(cell.coords[0]-self.goal.coords[0]),abs(cell.coords[1],self.goal.coords[1]))
 
+    # Returns a constant as the heuristic
     def constantDistance(self,cell):
         return 5
 
+    #Calculates the manhattan distance to the goal. Only admissible if the robot moves in four directions only.
     def ManhattanDistance(self,cell):
-        return None
+        return abs(cell.coords[0]-self.goal.coords[0])+abs(cell.coords[1]-self.goal.coords[1])
 
     # Check the queue size is zero
     def isQueueEmpty(self):

@@ -16,6 +16,8 @@ class ControllerBase(object):
     def __init__(self, occupancyGrid):
 
         rospy.wait_for_message('/robot0/odom', Odometry)
+        # Star time variable to help record the time needed for a robot to drive a path
+        self.start_time = 0
 
         # Create the node, publishers and subscriber
         self.velocityPublisher = rospy.Publisher('/robot0/cmd_vel', Twist, queue_size=10)
@@ -73,7 +75,7 @@ class ControllerBase(object):
         self.plannerDrawer = plannerDrawer
 
         rospy.loginfo('Driving path to goal with ' + str(len(path.waypoints)) + ' waypoint(s)')
-        
+        self.start_time = rospy.Time.now()
         # Drive to each waypoint in turn
         for waypointNumber in range(0, len(path.waypoints)):
             cell = path.waypoints[waypointNumber]
@@ -89,4 +91,6 @@ class ControllerBase(object):
         # Finish off by rotating the robot to the final configuration
         if rospy.is_shutdown() is False:
             self.rotateToGoalOrientation(goalOrientation)
+        
+        rospy.loginfo('Total Elapsed Time to Drive to Goal: ' + (rospy.Time.now() - self.start_time))
  
