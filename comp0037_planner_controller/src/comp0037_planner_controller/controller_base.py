@@ -18,6 +18,8 @@ class ControllerBase(object):
         rospy.wait_for_message('/robot0/odom', Odometry)
         # Star time variable to help record the time needed for a robot to drive a path
         self.start_time = 0
+        self.distance = 0
+        self.total_angle = 0
 
         # Create the node, publishers and subscriber
         self.velocityPublisher = rospy.Publisher('/robot0/cmd_vel', Twist, queue_size=10)
@@ -32,7 +34,7 @@ class ControllerBase(object):
 
         # Set the pose to an initial value to stop things crashing
         self.pose = Pose2D()
-
+        self.lastpose = self.pose
         # Store the occupany grid - used to transform from cell
         # coordinates to world driving coordinates.
         self.occupancyGrid = occupancyGrid
@@ -55,6 +57,9 @@ class ControllerBase(object):
         pose.y = position.y
         pose.theta = 2 * atan2(orientation.z, orientation.w)
         self.pose = pose
+        self.distance =  self.distance + sqrt((pose.x-self.lastpose.x)**2 + (pose.y-self.lastpose.y)**2)
+        self.total_angle = self.total_angle + abs(self.shortestAngularDistance(pose.theta,self.lastpose.theta))
+        self.lastpose = pose
 
     # Return the most up-to-date pose of the robot
     def getCurrentPose(self):
@@ -76,6 +81,8 @@ class ControllerBase(object):
 
         rospy.loginfo('Driving path to goal with ' + str(len(path.waypoints)) + ' waypoint(s)')
         self.start_time = rospy.Time.now()
+        self.distance = 0
+        self.total_angle = 0
         # Drive to each waypoint in turn
         for waypointNumber in range(0, len(path.waypoints)):
             cell = path.waypoints[waypointNumber]
@@ -92,5 +99,7 @@ class ControllerBase(object):
         if rospy.is_shutdown() is False:
             self.rotateToGoalOrientation(goalOrientation)
         
-        rospy.loginfo('Total Elapsed Time to Drive to Goal: ' + (rospy.Time.now() - self.start_time))
+        rospy.loginfo('Total Elapsed Time to Drive to Goal: ' + str(rospy.Time.now() - self.start_time))
+        rospy.loginfo('Total Distance Taken By Robot to Drive to Goal: ' + str(self.distance))
+        rospy.loginfo('Total Angle Turned By Robot to Drive to Goal: ' + str(self.total_angle))
  

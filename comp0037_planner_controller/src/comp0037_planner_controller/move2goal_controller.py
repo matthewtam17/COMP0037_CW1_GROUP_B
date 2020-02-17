@@ -23,8 +23,6 @@ class Move2GoalController(ControllerBase):
         self.angleErrorGain = rospy.get_param('angle_error_gain', 4)
 
         self.driveAngleErrorTolerance = math.radians(rospy.get_param('angle_error_tolerance', 1))
-        self.distance = 0
-        self.total_angle = 0
 
     def get_distance(self, goal_x, goal_y):
         distance = sqrt(pow((goal_x - self.pose.x), 2) + pow((goal_y - self.pose.y), 2))
@@ -45,13 +43,11 @@ class Move2GoalController(ControllerBase):
         dY = waypoint[1] - self.pose.y
         distanceError = sqrt(dX * dX + dY * dY)
         angleError = self.shortestAngularDistance(self.pose.theta, atan2(dY, dX))
-        lastPos = self.pose
-        lastAngle = self.pose.theta
         while (distanceError >= self.distanceErrorTolerance) & (not rospy.is_shutdown()):
             #print("Current Pose: x: {}, y:{} , theta: {}\nGoal: x: {}, y: {}\n".format(self.pose.x, self.pose.y,
             #                                                                           self.pose.theta, waypoint[0],
             #                                                                           waypoint[1]))
-            print("Distance Error: {}\nAngular Error: {}".format(distanceError, angleError))
+            #print("Distance Error: {}\nAngular Error: {}".format(distanceError, angleError))
             
             # Proportional Controller
             # linear velocity in the x-axis: only switch on when the angular error is sufficiently small
@@ -78,10 +74,6 @@ class Move2GoalController(ControllerBase):
             angleError = self.shortestAngularDistance(self.pose.theta,
                                                       atan2(waypoint[1] - self.pose.y, waypoint[0] - self.pose.x))
             
-            self.distance = self.distance + (sqrt(self.pose.x-lastPos.x)**2 + (self.pose.y-lastPos.y)**2)
-            self.total_angle = self.total_angle + self.shortestAngularDistance(self.pose.theta,lastAngle)
-            lastAngle = self.pose.theta
-            lastPos = self.pose
         # Make sure the robot is stopped once we reach the destination.
         vel_msg.linear.x = 0
         vel_msg.angular.z = 0
