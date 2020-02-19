@@ -88,7 +88,6 @@ class GeneralForwardSearchAlgorithm(PlannerBase):
         # c=min(1+(.2./((1.7-x).^2)).^2,1000);       
         cost=min(1+(0.2/((1.75-cell.terrainCost)**2))**2, 1000)
         L = sqrt(dX * dX + dY * dY)*cost# Multiplied by the terrain cost of the cell
-        
         return L
     
     #function for calculating the angle between two adjacent cells
@@ -150,7 +149,6 @@ class GeneralForwardSearchAlgorithm(PlannerBase):
             # planner from hanging.
             if rospy.is_shutdown():
                 return False
-            
             cell = self.popCellFromQueue()
             if (self.hasGoalBeenReached(cell) == True):
                 self.goalReached = True

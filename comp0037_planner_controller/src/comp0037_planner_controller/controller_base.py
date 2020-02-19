@@ -10,6 +10,7 @@ import time
 import math
 
 # This is the base class of the controller which moves the robot to its goal.
+#This is the low-level controller.
 
 class ControllerBase(object):
 
@@ -83,6 +84,7 @@ class ControllerBase(object):
         self.start_time = rospy.Time.now()
         self.distance = 0
         self.total_angle = 0
+        self.lastpose = self.pose
         # Drive to each waypoint in turn
         for waypointNumber in range(0, len(path.waypoints)):
             cell = path.waypoints[waypointNumber]

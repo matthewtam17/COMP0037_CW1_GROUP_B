@@ -18,12 +18,12 @@ class DijkstraPlanner(CellBasedForwardSearch):
     # We can simply add the cell onto the back of the queue because the get() function returns us the highest priority cell
     def pushCellOntoQueue(self, cell):
         itercell = cell.parent
-        travelCost = self.computeLStageAdditiveCost(itercell,cell)
+        pathCost = self.computeLStageAdditiveCost(itercell,cell)
         while (itercell is not None):
-            travelCost = travelCost + self.computeLStageAdditiveCost(itercell.parent, itercell)
+            pathCost = pathCost + self.computeLStageAdditiveCost(itercell.parent, itercell)
             itercell = itercell.parent
-        cell.travelCost = travelCost
-        self.dijkstraQueue.put((travelCost,cell))
+        cell.pathCost = pathCost
+        self.dijkstraQueue.put((pathCost,cell))
         #Checks if the new cell length is more than the existing max cell length.
         #If it is then update the max queue length value.
         if self.dijkstraQueue.qsize() > self.max_queue_length:
@@ -43,10 +43,10 @@ class DijkstraPlanner(CellBasedForwardSearch):
         return cell
 
     def resolveDuplicate(self, cell, parentCell):
-        newPathTravelCost = parentCell.travelCost + self.computeLStageAdditiveCost(parentCell,cell)
-        if newPathTravelCost < cell.travelCost:
+        newPathpathCost = parentCell.pathCost + self.computeLStageAdditiveCost(parentCell,cell)
+        if newPathpathCost < cell.pathCost:
             cell.parent = parentCell
-            cell.travelCost = newPathTravelCost
+            cell.pathCost = newPathpathCost
             self.pushCellOntoQueue(cell)
         else:
             pass
