@@ -21,6 +21,7 @@ class ControllerBase(object):
         self.start_time = 0
         self.distance = 0
         self.total_angle = 0
+        self.futureAngle = 0
 
         # Create the node, publishers and subscriber
         self.velocityPublisher = rospy.Publisher('/robot0/cmd_vel', Twist, queue_size=10)
@@ -65,6 +66,9 @@ class ControllerBase(object):
     # Return the most up-to-date pose of the robot
     def getCurrentPose(self):
         return self.pose
+    
+    def shortestAngularDistance(self,fromAngle,toAngle):
+        return NotImplementedError()
 
     # Handle the logic of driving the robot to the next waypoint
     def driveToWaypoint(self, waypoint):
@@ -79,17 +83,34 @@ class ControllerBase(object):
     # make sure the graphics are redrawn properly.
     def drivePathToGoal(self, path, goalOrientation, plannerDrawer):
         self.plannerDrawer = plannerDrawer
-
         rospy.loginfo('Driving path to goal with ' + str(len(path.waypoints)) + ' waypoint(s)')
-        self.start_time = rospy.Time.now()
+        self.start_time = rospy.get_time()
         self.distance = 0
         self.total_angle = 0
         self.lastpose = self.pose
+        self.skipwaypoints = []
         # Drive to each waypoint in turn
         for waypointNumber in range(0, len(path.waypoints)):
             cell = path.waypoints[waypointNumber]
+
+            #if waypointNumber in self.skipwaypoints:
+            #    print skipping
+            #    continue
+            #futureAngle = 0
+            #i = waypointNumber
+            #dX = cell.coords[0] - self.pose.x
+            #dY = cell.coords[1] - self.pose.y
+            #angleError = atan2(dY, dX)
+            #while (futureAngle == 0):
+            #    dY = path.waypoints[i+1].coords[1] - path.waypoints[i].coords[1]
+            #    dX = path.waypoints[i+1].coords[0] - path.waypoints[i].coords[0]
+            #    futureAngle = self.shortestAngularDistance(angleError, atan2(dY, dX))
+            #    i = i + 1
+            #for i in range(waypointNumber+1,i-1):
+            #    self.skipwaypoints.append(i)
+            #    
+
             waypoint = self.occupancyGrid.getWorldCoordinatesFromCellCoordinates(cell.coords)
-            rospy.loginfo("Driving to waypoint (%f, %f)", waypoint[0], waypoint[1])
             self.driveToWaypoint(waypoint)
             # Handle ^C
             if rospy.is_shutdown() is True:
@@ -101,7 +122,7 @@ class ControllerBase(object):
         if rospy.is_shutdown() is False:
             self.rotateToGoalOrientation(goalOrientation)
         
-        rospy.loginfo('Total Elapsed Time to Drive to Goal: ' + str(rospy.Time.now() - self.start_time))
-        rospy.loginfo('Total Distance Taken By Robot to Drive to Goal: ' + str(self.distance))
-        rospy.loginfo('Total Angle Turned By Robot to Drive to Goal: ' + str(self.total_angle))
+        print('Total Elapsed Time to Drive to Goal: ' + str(rospy.get_time() - self.start_time))
+        print('Total Distance Taken By Robot to Drive to Goal: ' + str(self.distance))
+        print('Total Angle Turned By Robot to Drive to Goal: ' + str(self.total_angle))
  

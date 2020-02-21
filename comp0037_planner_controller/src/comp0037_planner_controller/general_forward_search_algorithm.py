@@ -25,6 +25,8 @@ class GeneralForwardSearchAlgorithm(PlannerBase):
         self.max_queue_length = 0
         #Not yet implemented
         self.total_angle = 0
+
+        self.occupancyGrid = occupancyGrid
     #When you go between each waypoint. Angle waypoint 2 - waypoint 1 and sum all that together.
     #
 
@@ -89,7 +91,14 @@ class GeneralForwardSearchAlgorithm(PlannerBase):
         cost=min(1+(0.2/((1.75-cell.terrainCost)**2))**2, 1000)
         L = sqrt(dX * dX + dY * dY)*cost# Multiplied by the terrain cost of the cell
         return L
-    
+
+    def computeLStageDistance(self, parentCell, cell):
+        if (parentCell is None):
+            return 0
+        parentCellCoords = self.occupancyGrid.getWorldCoordinatesFromCellCoordinates(parentCell.coords)
+        cellCoords = self.occupancyGrid.getWorldCoordinatesFromCellCoordinates(cell.coords)
+        return sqrt((cellCoords[0]-parentCellCoords[0])**2+(cellCoords[1]-parentCellCoords[1])**2)
+
     #function for calculating the angle between two adjacent cells
     def computeLstageAngle(self,parentCell,cell):
 
@@ -204,6 +213,7 @@ class GeneralForwardSearchAlgorithm(PlannerBase):
         cell = pathEndCell.parent
         path.travelCost = self.computeLStageAdditiveCost(pathEndCell.parent, pathEndCell)
         path.travelAngle = self.computeLstageAngle(pathEndCell.parent,pathEndCell)
+        path.travelDistance = self.computeLStageDistance(pathEndCell.parent,pathEndCell)
         lastAngle = path.travelAngle
         currentAngle = 0
 
@@ -213,6 +223,7 @@ class GeneralForwardSearchAlgorithm(PlannerBase):
         while (cell is not None):
             path.waypoints.appendleft(cell)
             path.travelCost = path.travelCost + self.computeLStageAdditiveCost(cell.parent, cell)
+            path.travelDistance = path.travelDistance + self.computeLStageDistance(cell.parent, cell)
             currentAngle = self.computeLstageAngle(cell.parent,cell)
             if (currentAngle == -1): 
                 currentAngle = lastAngle
@@ -228,8 +239,10 @@ class GeneralForwardSearchAlgorithm(PlannerBase):
         # Therefore, if we didn't reach the goal, change it to infinity
         if path.goalReached is False:
             path.travelCost = float("inf")
+            path.travelDistance = float("inf")
 
         print "Path travel cost = " + str(path.travelCost)
+        print "Path travel distance = " + str(path.travelDistance)
         print "Path cardinality = " + str(path.numberOfWaypoints)
         print "Path travel angle = " + str(path.travelAngle)
         

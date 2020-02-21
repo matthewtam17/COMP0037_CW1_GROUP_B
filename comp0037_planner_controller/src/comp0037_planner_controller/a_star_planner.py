@@ -17,7 +17,7 @@ class AStarPlanner(CellBasedForwardSearch):
         self.astarQueue = Queue.PriorityQueue()
 
         #Determine which heuristic to use!
-        self.heuristic = 4
+        self.heuristic = -1
 
         #Determine the weighting of the scaled A* algorithm
         self.w = 1
@@ -29,6 +29,7 @@ class AStarPlanner(CellBasedForwardSearch):
         #3:Minkowski Distance
         #4:Cosine Distance
         #5:Euclidean SQUARE Distance (non-admissible)
+        #-1: constant
 
     # Find the cell's "priority value" and add onto the priority queue.
     # We can simply add the cell onto the back of the queue because the get() function returns us the highest priority cell
@@ -63,7 +64,7 @@ class AStarPlanner(CellBasedForwardSearch):
             return ((self.goal.coords[0]-cell.coords[0])**2 + (self.goal.coords[1]-cell.coords[1])**2)
         else:
             # Returns a constant as the heuristic
-            return 100
+            return 1000
 
     # Check the queue size is zero
     def isQueueEmpty(self):
@@ -86,16 +87,6 @@ class AStarPlanner(CellBasedForwardSearch):
 
     def resolveDuplicate(self, cell, parentCell):
         newPathpathCost = parentCell.pathCost-(self.w)*(self.cal_heuristic(parentCell)) + self.computeLStageAdditiveCost(parentCell,cell)
-        #print("newpathpathCost:"+str(newPathpathCost))
-        #print("parentCell.pathCost:"+str(parentCell.pathCost))
-        #print("cell.pathCost:" + str(cell.pathCost))
-        #print("parentCell.parents:"+str(parentCell.parent.coords))
-        #while(parentCell.parent):
-        #    print(parentCell.parent.coords)
-        #    parentCell = parentCell.parent
-        #print("cell.parent:"+str(cell.parent))
-        #print("cell:"+str(cell.coords))
-        #print("start:"+str(self.start.coords))
         if newPathpathCost < (self.computePathCost(cell)-(self.w)*(self.cal_heuristic(cell))) and cell != parentCell.parent:
             cell.parent = parentCell
             cell.pathCost = newPathpathCost

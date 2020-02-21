@@ -21,4 +21,5 @@ class PlannedPath(object):
         self.numberOfWaypoints = 0
         self.travelCost = 0
         self.travelAngle = 0
+        self.travelDistance = 0
 
