@@ -16,12 +16,14 @@ class AStarPlanner(CellBasedForwardSearch):
         CellBasedForwardSearch.__init__(self, title, occupancyGrid)
         self.astarQueue = Queue.PriorityQueue()
 
-        #Determine which heuristic to use!
-        self.heuristic = -1
-
         #Determine the weighting of the scaled A* algorithm
         self.w = 1
         
+        #Value that determines what heuristic to use!
+        #We use this method to set the heuristic as its more simple to implement than 
+        #passing arguments into the function
+
+        self.heuristic = 1
         #Heuristics available:
         #0:Euclidean Distance 
         #1:Octile Distance
@@ -58,7 +60,9 @@ class AStarPlanner(CellBasedForwardSearch):
             return ((self.goal.coords[0]-cell.coords[0])**h + (self.goal.coords[1]-cell.coords[1])**h)**(1/h)
         elif self.heuristic == 4:
             #Cosine heuristic to the goal.
-            return np.dot(self.goal.coords,cell.coords)/(np.sqrt(np.dot(self.goal.coords,cell.coords)*np.dot(self.goal.coords,cell.coords)))
+            x = self.goal.coords
+            y = cell.coords
+            return np.dot(x,y)/(np.sqrt(np.dot(x,x))*np.sqrt(np.dot(y,y)))
         elif self.heuristic == 5:
             #Euclidean Square - demonstration of a NON-admissible heuristic
             return ((self.goal.coords[0]-cell.coords[0])**2 + (self.goal.coords[1]-cell.coords[1])**2)
@@ -75,6 +79,9 @@ class AStarPlanner(CellBasedForwardSearch):
         priority, cell = self.astarQueue.get()
         return cell
 
+    # Function to compute the path cost - we use this to compute the distance of the 
+    # planned path, disregarding the terrain cost. We use this to compare with the 
+    # distance of the actual travelled path in part 2.
     def computePathCost(self,cell):
         itercell = cell.parent
         pathCost = 0
@@ -85,6 +92,11 @@ class AStarPlanner(CellBasedForwardSearch):
             itercell = itercell.parent
         return pathCost
 
+    #resolveDuplicate function. The A* includes a heuristic of the distance to the goal
+    # in the pathCost for each cell here, which is used to determine the priority for
+    # each cell. We have to disregard that as the resolveDuplicate() function needs to
+    #function the same as that for Dijkstra, or else we will end up with a path that loops
+    #around itself and does not connect with the start cell.
     def resolveDuplicate(self, cell, parentCell):
         newPathpathCost = parentCell.pathCost-(self.w)*(self.cal_heuristic(parentCell)) + self.computeLStageAdditiveCost(parentCell,cell)
         if newPathpathCost < (self.computePathCost(cell)-(self.w)*(self.cal_heuristic(cell))) and cell != parentCell.parent:

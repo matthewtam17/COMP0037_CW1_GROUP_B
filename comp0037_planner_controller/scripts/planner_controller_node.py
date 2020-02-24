@@ -17,7 +17,7 @@ from comp0037_planner_controller.srv import *
 from comp0037_planner_controller.occupancy_grid import OccupancyGrid
 
 # The planner used to figure out the path
-from comp0037_planner_controller.fifo_planner import FIFOPlanner
+from comp0037_planner_controller.a_star_planner import AStarPlanner
 
 # The controller to drive the robot along the path
 from comp0037_planner_controller.move2goal_controller import Move2GoalController
@@ -52,7 +52,8 @@ class PlannerControllerNode(object):
         self.occupancyGrid.expandObstaclesToAccountForCircularRobotOfRadius(0.2)
 
     def createPlanner(self):
-        self.planner = FIFOPlanner('FIFO', self.occupancyGrid)
+        #self.planner = FIFOPlanner('FIFO', self.occupancyGrid)
+        self.planner = AStarPlanner('A* Search', self.occupancyGrid)
         self.planner.setPauseTime(0)
         self.planner.windowHeightInPixels = rospy.get_param('maximum_window_height_in_pixels', 700)
         
@@ -96,6 +97,9 @@ class PlannerControllerNode(object):
         if rospy.is_shutdown() is True:
             return False
 
+        #Set the start time in the controller, so that we can measure the elapsed time
+        #to plan a path and drive the robot to the goal.
+        self.robotController.start_time = rospy.get_time()
         # Get the plan
         goalReached = self.planner.search(startCellCoords, goalCellCoords)
 

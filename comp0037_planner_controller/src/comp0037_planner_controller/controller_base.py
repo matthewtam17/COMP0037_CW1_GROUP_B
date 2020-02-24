@@ -22,6 +22,9 @@ class ControllerBase(object):
         self.distance = 0
         self.total_angle = 0
         self.futureAngle = 0
+        # Controller variable on whether to use our proposed enhancements to increase the 
+        #speeds of the robot or not.
+        self.enhancements = 0
 
         # Create the node, publishers and subscriber
         self.velocityPublisher = rospy.Publisher('/robot0/cmd_vel', Twist, queue_size=10)
@@ -84,7 +87,6 @@ class ControllerBase(object):
     def drivePathToGoal(self, path, goalOrientation, plannerDrawer):
         self.plannerDrawer = plannerDrawer
         rospy.loginfo('Driving path to goal with ' + str(len(path.waypoints)) + ' waypoint(s)')
-        self.start_time = rospy.get_time()
         self.distance = 0
         self.total_angle = 0
         self.lastpose = self.pose
@@ -93,22 +95,28 @@ class ControllerBase(object):
         for waypointNumber in range(0, len(path.waypoints)):
             cell = path.waypoints[waypointNumber]
 
-            #if waypointNumber in self.skipwaypoints:
-            #    print skipping
-            #    continue
-            #futureAngle = 0
-            #i = waypointNumber
-            #dX = cell.coords[0] - self.pose.x
-            #dY = cell.coords[1] - self.pose.y
-            #angleError = atan2(dY, dX)
-            #while (futureAngle == 0):
-            #    dY = path.waypoints[i+1].coords[1] - path.waypoints[i].coords[1]
-            #    dX = path.waypoints[i+1].coords[0] - path.waypoints[i].coords[0]
-            #    futureAngle = self.shortestAngularDistance(angleError, atan2(dY, dX))
-            #    i = i + 1
-            #for i in range(waypointNumber+1,i-1):
-            #    self.skipwaypoints.append(i)
-            #    
+            if self.enhancements:
+                if waypointNumber in self.skipwaypoints:
+                    print"skipping"
+                    continue
+                try:
+                    futureAngle = 0
+                    i = waypointNumber
+                    dX = path.waypoints[waypointNumber+1].coords[0] - cell.coords[0]
+                    dY = path.waypoints[waypointNumber+1].coords[1] - cell.coords[1]
+                    angleError = atan2(dY, dX)
+                    while (futureAngle == 0):
+                            try:
+                                dY = path.waypoints[i+1].coords[1] - path.waypoints[i].coords[1]
+                                dX = path.waypoints[i+1].coords[0] - path.waypoints[i].coords[0]
+                                futureAngle = self.shortestAngularDistance(angleError, atan2(dY, dX))
+                                i = i + 1
+                            except:
+                                break
+                    for i in range(waypointNumber+1,i-1):
+                        self.skipwaypoints.append(i)
+                except:
+                    continue
 
             waypoint = self.occupancyGrid.getWorldCoordinatesFromCellCoordinates(cell.coords)
             self.driveToWaypoint(waypoint)
