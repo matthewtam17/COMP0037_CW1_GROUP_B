@@ -24,7 +24,8 @@ class ControllerBase(object):
         self.futureAngle = 0
         # Controller variable on whether to use our proposed enhancements to increase the 
         #speeds of the robot or not.
-        self.enhancements = 0
+        self.enhancements = 1
+        # To use enhancements, set this to 1
 
         # Create the node, publishers and subscriber
         self.velocityPublisher = rospy.Publisher('/robot0/cmd_vel', Twist, queue_size=10)
@@ -62,6 +63,7 @@ class ControllerBase(object):
         pose.y = position.y
         pose.theta = 2 * atan2(orientation.z, orientation.w)
         self.pose = pose
+        # Updating the 
         self.distance =  self.distance + sqrt((pose.x-self.lastpose.x)**2 + (pose.y-self.lastpose.y)**2)
         self.total_angle = self.total_angle + abs(self.shortestAngularDistance(pose.theta,self.lastpose.theta))
         self.lastpose = pose
