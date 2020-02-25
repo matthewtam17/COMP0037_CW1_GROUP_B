@@ -24,7 +24,7 @@ class ControllerBase(object):
         self.futureAngle = 0
         # Controller variable on whether to use our proposed enhancements to increase the 
         #speeds of the robot or not.
-        self.enhancements = 1
+        self.enhancements = 0
         # To use enhancements, set this to 1
 
         # Create the node, publishers and subscriber
@@ -63,7 +63,7 @@ class ControllerBase(object):
         pose.y = position.y
         pose.theta = 2 * atan2(orientation.z, orientation.w)
         self.pose = pose
-        # Updating the 
+        # Code to record the distance and path that the robot actually needed to drive over path
         self.distance =  self.distance + sqrt((pose.x-self.lastpose.x)**2 + (pose.y-self.lastpose.y)**2)
         self.total_angle = self.total_angle + abs(self.shortestAngularDistance(pose.theta,self.lastpose.theta))
         self.lastpose = pose
@@ -96,26 +96,42 @@ class ControllerBase(object):
         # Drive to each waypoint in turn
         for waypointNumber in range(0, len(path.waypoints)):
             cell = path.waypoints[waypointNumber]
-
             if self.enhancements:
+                ###    MY CODE TO REMOVE WAYPOINTS WTIHIN A STRAIGHT LINE   ###
+                #While driving to each waypoint, if we have the "enhancements" switched on,
+                #my code then iterates through subsequent waypoints, checking whether they have
+                #the same orientation/angle as that from the current target waypoint to the next one
+                #It goes as far as when it detects the angle is no longer the same i.e. path no longer straight
+                #Then breaks, so it would know the number of waypoints after the current one that can be removed
+                #as they are all part of the straight line. This makes the robot "jump" waypoints and hence drive
+                #faster towards goal.
+                #If the current waypoint is already listed as needed to be skipped, just ignore this waypoint and continue
                 if waypointNumber in self.skipwaypoints:
                     print"skipping"
                     continue
                 try:
+                    #Temporary angle to store the orientaton of subsequent waypoints to check against
                     futureAngle = 0
                     i = waypointNumber
+                    #Here, we form the initial orientation- the orientation of the current waypoint to the next one
+                    #That we will be checking all subsequent waypoinnts againt to see if they are part of the same straight line
                     dX = path.waypoints[waypointNumber+1].coords[0] - cell.coords[0]
                     dY = path.waypoints[waypointNumber+1].coords[1] - cell.coords[1]
                     angleError = atan2(dY, dX)
                     while (futureAngle == 0):
                             try:
+                                #For each subsequent waypoint, obtain the n to n + 1 orientation
                                 dY = path.waypoints[i+1].coords[1] - path.waypoints[i].coords[1]
                                 dX = path.waypoints[i+1].coords[0] - path.waypoints[i].coords[0]
+                                #Compare the n to n + 1 orientation with the original orientation
+                                #If it is different it means no longer straight line then loop will break
                                 futureAngle = self.shortestAngularDistance(angleError, atan2(dY, dX))
+                                #Iterator to store the number of subsequent waypoints that are within the straight line
                                 i = i + 1
                             except:
                                 break
                     for i in range(waypointNumber+1,i-1):
+                        #After loop breaks, mark all the waypoints we've identified as within the straight line to skip them
                         self.skipwaypoints.append(i)
                 except:
                     continue

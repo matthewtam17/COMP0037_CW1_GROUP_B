@@ -23,7 +23,7 @@ class AStarPlanner(CellBasedForwardSearch):
         #We use this method to set the heuristic as its more simple to implement than 
         #passing arguments into the function
 
-        self.heuristic = 1
+        self.heuristic = 0
         #Heuristics available:
         #0:Euclidean Distance 
         #1:Octile Distance
